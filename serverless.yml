@@ -1,4 +1,4 @@
-service: aws-python-rest-api-with-dynamodb
+service: sls-sample-2
 
 provider:
   name: aws

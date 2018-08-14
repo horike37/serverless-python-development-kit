@@ -25,6 +25,11 @@ def create(event, context):
             user_id=user_id,
             email=data['email'],
         )
+    except json.decoder.JSONDecodeError:
+        return response_builder(400, {
+            'error_message': 'JSONが不正です'
+        })
+
     except ClientError as e:
         logger.error(e)
         return response_builder(500, {
