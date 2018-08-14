@@ -1,0 +1,10 @@
+{
+  "name": "aws-python-rest-api-with-dynamodb",
+  "version": "1.0.0",
+  "description": "Serverless CRUD service exposing a REST HTTP interface",
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless": "^1.30.0"
+  }
+}
