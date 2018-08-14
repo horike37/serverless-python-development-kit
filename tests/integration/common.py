@@ -20,12 +20,12 @@ def get_endpoint_url(stage):
             return output['OutputValue']
 
 
-def sls_deploy(stage):
-    exec_cmd('serverless deploy --stage '+stage)
+def sls_deploy(stage, region):
+    exec_cmd(os.path.dirname(__file__)+'/../../node_modules/.bin/serverless deploy --stage '+stage+ ' --region '+region)
 
 
-def sls_remove(stage):
-    exec_cmd('serverless remove --stage '+stage)
+def sls_remove(stage, region):
+    exec_cmd(os.path.dirname(__file__)+'/../../node_modules/.bin/serverless remove --stage '+stage+ ' --region '+region)
 
 
 def exec_cmd(cmd):

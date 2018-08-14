@@ -1,0 +1,116 @@
+version: 2
+jobs:
+  build:
+    docker:
+      # Pythonを指定
+      - image: circleci/python:3.6.6
+
+    working_directory: ~/repo
+    steps:
+      # リポジトリのコードを working_directory にチェックアウト
+      - checkout
+
+      # npm installでServerless Frameworkのインストール
+      - run:
+          name: Install Serverless
+          command: |
+            sudo apt-get install curl
+            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+            sudo npm install npm@latest -g
+            npm install
+
+      # pipenvでライブラリのインストール
+      - restore_cache:
+          keys:
+            - cache-{{ checksum "Pipfile.lock" }}
+            - cache-
+      - run:
+          name: Install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pipenv sync --dev
+      - save_cache:
+          key: cache-{{ checksum "Pipfile.lock" }}
+          paths:
+            - ~/.local
+            - ~/.cache
+
+      # テストの実行
+      - run:
+          name: run unit tests
+          command: |
+            . venv/bin/activate
+            pytest tests/unit/
+
+      # インテグレーションテストの実行
+      - run:
+          name: run integration tests
+          command: |
+            . venv/bin/activate
+            pytest tests/integration/
+  deploy-dev:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:8.11
+
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: npm install
+      - run:
+          name: install Serverless Framework
+          command: |
+            chmod -R +x ./ci/*
+      - run:
+          name: init-serverless-config
+          command: ./node_modules/serverless/bin/serverless config credentials -k ${AWS_ACCESS_KEY} -s ${AWS_SECRET_KEY} -p aws
+      - deploy:
+          name: deploy for development
+          command: ./ci/deploy_development.sh
+
+  deploy-prod:
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:8.11
+
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: npm install
+      - run:
+          name: install Serverless Framework
+          command: |
+            chmod -R +x ./ci/*
+      - run:
+          name: init-serverless-config
+          command: ./node_modules/serverless/bin/serverless config credentials -k ${AWS_ACCESS_KEY} -s ${AWS_SECRET_KEY} -p aws
+      - deploy:
+          name: deploy for production
+          command: ./ci/deploy_production.sh
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+$/
+      - deploy-dev:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              only: master
+      - deploy-prod:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^[0-9]+\.[0-9]+\.[0-9]+$/

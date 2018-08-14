@@ -6,13 +6,14 @@ import boto3
 from .common import sls_deploy, sls_remove, get_endpoint_url
 dynamodb = boto3.resource('dynamodb')
 stage = 'integrationtest'
+region = 'ap-northeast-1'
 users_table = 'users-' + stage
 
 
 class TestUsers(object):
     @classmethod
     def setup_class(cls):
-        sls_deploy(stage)
+        sls_deploy(stage, region)
         cls.endpoint = get_endpoint_url(stage)
         cls.user_id = cls._get_randam_value(cls)
         cls.email = cls.user_id + '@example.com'
@@ -20,7 +21,7 @@ class TestUsers(object):
 
     @classmethod
     def teardown_class(cls):
-        sls_remove(stage)
+        sls_remove(stage, region)
         cls._delete_all_tables(cls)
 
     def setup(self):
