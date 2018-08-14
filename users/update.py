@@ -17,7 +17,7 @@ def update(event, context):
             })
 
         if not users.exists_user(user_id=user_id):
-            return response_builder(409, {
+            return response_builder(400, {
                 'error_message': '既にそのユーザは存在していません'
             })
 
@@ -25,6 +25,11 @@ def update(event, context):
             user_id=user_id,
             email=data['email'],
         )
+    except json.decoder.JSONDecodeError:
+        return response_builder(400, {
+            'error_message': 'JSONが不正です'
+        })
+
     except ClientError as e:
         logger.error(e)
         return response_builder(500, {
