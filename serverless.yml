@@ -1,4 +1,4 @@
-service: sls-sample-2
+service: sls-sample
 
 provider:
   name: aws
