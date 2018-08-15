@@ -4,10 +4,9 @@ import boto3
 import yaml
 import os
 
-cloudformation = boto3.client('cloudformation')
 
-
-def get_endpoint_url(stage):
+def get_endpoint_url(stage, region):
+    cloudformation = boto3.client('cloudformation', region_name=region)
     f = open(os.path.dirname(__file__)+'/../../serverless.yml', 'r+')
     data = yaml.load(f)
     stackname = data['service'] + '-' + stage

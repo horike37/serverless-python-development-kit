@@ -4,24 +4,22 @@ import requests
 import json
 import boto3
 from .common import sls_deploy, sls_remove, get_endpoint_url
-dynamodb = boto3.resource('dynamodb')
-stage = 'integrationtest'
-region = 'ap-northeast-1'
-users_table = 'users-' + stage
+from .conftest import option
 
 
 class TestUsers(object):
     @classmethod
     def setup_class(cls):
-        sls_deploy(stage, region)
-        cls.endpoint = get_endpoint_url(stage)
+        sls_deploy(option.stage, option.region)
+        cls.dynamodb = boto3.resource('dynamodb', region_name=option.region)
+        cls.endpoint = get_endpoint_url(option.stage, option.region)
         cls.user_id = cls._get_randam_value(cls)
         cls.email = cls.user_id + '@example.com'
-        cls.users_table = dynamodb.Table(users_table)
+        cls.users_table = cls.dynamodb.Table('users-' + option.stage)
 
     @classmethod
     def teardown_class(cls):
-        sls_remove(stage, region)
+        sls_remove(option.stage, option.region)
         cls._delete_all_tables(cls)
 
     def setup(self):

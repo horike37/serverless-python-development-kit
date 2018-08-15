@@ -42,14 +42,14 @@ jobs:
           name: run unit tests
           command: |
             . venv/bin/activate
-            pytest tests/unit/
+            pytest tests/unit/  -s
 
       # インテグレーションテストの実行
       - run:
           name: run integration tests
           command: |
             . venv/bin/activate
-            pytest tests/integration/
+            pytest tests/integration/ --stage integrationtest --region ap-northeast-1 -s
   deploy-dev:
     docker:
       # specify the version you desire here
