@@ -63,9 +63,6 @@ jobs:
           name: install Serverless Framework
           command: |
             chmod -R +x ./ci/*
-      - run:
-          name: init-serverless-config
-          command: ./node_modules/serverless/bin/serverless config credentials -k ${AWS_ACCESS_KEY} -s ${AWS_SECRET_KEY} -p aws
       - deploy:
           name: deploy for development
           command: ./ci/deploy_development.sh
@@ -83,9 +80,6 @@ jobs:
           name: install Serverless Framework
           command: |
             chmod -R +x ./ci/*
-      - run:
-          name: init-serverless-config
-          command: ./node_modules/serverless/bin/serverless config credentials -k ${AWS_ACCESS_KEY} -s ${AWS_SECRET_KEY} -p aws
       - deploy:
           name: deploy for production
           command: ./ci/deploy_production.sh
