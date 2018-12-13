@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       # Pythonを指定
-      - image: circleci/python:3.6.6
+      - image: circleci/python:3.7.1
 
     working_directory: ~/repo
     steps:
@@ -30,7 +30,7 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            pipenv sync --dev
+            pip install -r requirements.txt
       - save_cache:
           key: cache-{{ checksum "Pipfile.lock" }}
           paths:
