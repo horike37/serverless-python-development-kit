@@ -43,11 +43,18 @@ jobs:
   deploy-dev:
     docker:
       # specify the version you desire here
-      - image: circleci/node:8.11
+      - image: circleci/python:3.7.1
 
     working_directory: ~/repo
     steps:
       - checkout
+      - run:
+          name: Install Serverless
+          command: |
+            sudo apt-get install curl
+            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+            sudo npm install npm@latest -g
       - run: npm install
       - run:
           name: install Serverless Framework
@@ -60,11 +67,18 @@ jobs:
   deploy-prod:
     docker:
       # specify the version you desire here
-      - image: circleci/node:8.11
+      - image: circleci/python:3.7.1
 
     working_directory: ~/repo
     steps:
       - checkout
+      - run:
+          name: Install Serverless
+          command: |
+            sudo apt-get install curl
+            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+            sudo npm install npm@latest -g
       - run: npm install
       - run:
           name: install Serverless Framework
