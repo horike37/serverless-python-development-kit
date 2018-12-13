@@ -20,22 +20,12 @@ jobs:
             sudo npm install npm@latest -g
             npm install
 
-      # pipenvでライブラリのインストール
-      - restore_cache:
-          keys:
-            - cache-{{ checksum "Pipfile.lock" }}
-            - cache-
       - run:
           name: Install dependencies
           command: |
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
-      - save_cache:
-          key: cache-{{ checksum "Pipfile.lock" }}
-          paths:
-            - ~/.local
-            - ~/.cache
 
       # テストの実行
       - run:
