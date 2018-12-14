@@ -5,7 +5,7 @@ from botocore.exceptions import ClientError
 users = Users()
 
 
-def update(event, context):
+def handler(event, context):
     try:
         logger.info(event)
         data = json.loads(event['body'])
@@ -16,12 +16,12 @@ def update(event, context):
                 'error_message': 'emailのパラメータが足りません'
             })
 
-        if not users.exists_user(user_id=user_id):
-            return response_builder(400, {
-                'error_message': '既にそのユーザは存在していません'
+        if users.exists_user(user_id=user_id):
+            return response_builder(409, {
+                'error_message': '既にそのユーザは存在しています'
             })
 
-        users.update(
+        users.create(
             user_id=user_id,
             email=data['email'],
         )
@@ -36,4 +36,4 @@ def update(event, context):
             'error_message': 'Internal Server Error'
         })
 
-    return response_builder(204)
+    return response_builder(201)

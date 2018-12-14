@@ -1,4 +1,4 @@
-from users.create import create
+from lambdas.http.users.create import handler
 from unittest import mock
 from botocore.exceptions import ClientError
 import json
@@ -14,12 +14,12 @@ class TestUsersCreate(object):
             }
         }
 
-        result = create(event, '')
+        result = handler(event, '')
         body = json.loads(result['body'])
         assert result['statusCode'] == 400
         assert body['error_message'] == 'emailのパラメータが足りません'
 
-    @mock.patch('users.create.users.exists_user')
+    @mock.patch('lambdas.http.users.create.users.exists_user')
     def test_duplicate_user(self, mock):
         mock.return_value = True
         event = {
@@ -29,7 +29,7 @@ class TestUsersCreate(object):
             }
         }
 
-        result = create(event, '')
+        result = handler(event, '')
         body = json.loads(result['body'])
         assert result['statusCode'] == 409
         assert body['error_message'] == '既にそのユーザは存在しています'
@@ -42,12 +42,12 @@ class TestUsersCreate(object):
             }
         }
 
-        result = create(event, '')
+        result = handler(event, '')
         body = json.loads(result['body'])
         assert result['statusCode'] == 400
         assert body['error_message'] == 'JSONが不正です'
 
-    @mock.patch('users.create.users.exists_user', side_effect=ClientError(
+    @mock.patch('lambdas.http.users.create.users.exists_user', side_effect=ClientError(
         {'error': 'error'}, 'error')
     )
     def test_500_error(self, mock):
@@ -59,5 +59,5 @@ class TestUsersCreate(object):
             }
         }
 
-        result = create(event, '')
+        result = handler(event, '')
         assert result['statusCode'] == 500

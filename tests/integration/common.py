@@ -19,13 +19,21 @@ def get_endpoint_url(stage, region):
             return output['OutputValue']
 
 
-def sls_deploy(stage, region):
+def api_deploy(stage, region):
     exec_cmd(os.path.dirname(__file__)+'/../../node_modules/.bin/serverless deploy --stage '+stage+ ' --region '+region)
 
+def db_deploy(stage, region):
+    os.chdir('db/')
+    exec_cmd(os.path.dirname(__file__)+'/../../node_modules/.bin/serverless deploy --stage '+stage+ ' --region '+region)
+    os.chdir('../')
 
-def sls_remove(stage, region):
+def api_remove(stage, region):
     exec_cmd(os.path.dirname(__file__)+'/../../node_modules/.bin/serverless remove --stage '+stage+ ' --region '+region)
 
+def db_remove(stage, region):
+    os.chdir('db/')
+    exec_cmd(os.path.dirname(__file__)+'/../../node_modules/.bin/serverless remove --stage '+stage+ ' --region '+region)
+    os.chdir('../')
 
 def exec_cmd(cmd):
     proc = subprocess.Popen(

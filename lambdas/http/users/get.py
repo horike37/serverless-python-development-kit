@@ -4,7 +4,7 @@ from botocore.exceptions import ClientError
 users = Users()
 
 
-def get(event, context):
+def handler(event, context):
     try:
         logger.info(event)
         user_id = event['pathParameters']['user_id']

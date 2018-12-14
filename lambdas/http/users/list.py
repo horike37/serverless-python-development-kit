@@ -4,11 +4,10 @@ from botocore.exceptions import ClientError
 users = Users()
 
 
-def delete(event, context):
+def handler(event, context):
     try:
         logger.info(event)
-        user_id = event['pathParameters']['user_id']
-        users.delete(user_id=user_id)
+        result = users.get_all()
 
     except ClientError as e:
         logger.error(e)
@@ -16,4 +15,4 @@ def delete(event, context):
             'error_message': 'Internal Server Error'
         })
 
-    return response_builder(204)
+    return response_builder(200, result['Items'])

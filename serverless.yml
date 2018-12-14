@@ -4,6 +4,7 @@ provider:
   name: aws
   region: ap-northeast-1
   runtime: python3.7
+  deploymentBucket: serverless.${self:service}.deploys
   environment:
     DYNAMODB_TABLE_USERS: users-${opt:stage, self:provider.stage}
   iamRoleStatements:
@@ -17,9 +18,15 @@ provider:
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE_USERS}"
 
+package:
+  exclude:
+     - '**'
+     - '!lambdas/**'
+     - '!lib/**'
+
 functions:
   create:
-    handler: users/create.create
+    handler: lambdas/http/users/create.handler
     events:
       - http:
           path: users/{user_id}
@@ -27,7 +34,7 @@ functions:
           cors: true
 
   list:
-    handler: users/list.list
+    handler: lambdas/http/users/list.handler
     events:
       - http:
           path: users
@@ -35,7 +42,7 @@ functions:
           cors: true
 
   get:
-    handler: users/get.get
+    handler: lambdas/http/users/get.handler
     events:
       - http:
           path: users/{user_id}
@@ -43,7 +50,7 @@ functions:
           cors: true
 
   update:
-    handler: users/update.update
+    handler: lambdas/http/users/update.handler
     events:
       - http:
           path: users/{user_id}
@@ -51,7 +58,7 @@ functions:
           cors: true
 
   delete:
-    handler: users/delete.delete
+    handler: lambdas/http/users/delete.handler
     events:
       - http:
           path: users/{user_id}
@@ -67,25 +74,7 @@ custom:
     automatic: true
     number: 3
 
-resources:
-  Resources:
-    usersDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-          -
-            AttributeName: user_id
-            AttributeType: S
-        KeySchema:
-          -
-            AttributeName: user_id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.DYNAMODB_TABLE_USERS}
-
 plugins:
   - serverless-python-requirements
   - serverless-prune-plugin
+#  - serverless-aws-alias

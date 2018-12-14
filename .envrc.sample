@@ -4,3 +4,4 @@ export AWS_SECRET_ACCESS_KEY=iU6/q6ls5i5pDBPxxxxxxxxxxxxxxxxxxxx
 export INTEGRATION_TEST_STAGE=integration
 export PYTHONPATH=./
 export DYNAMODB_TABLE_USERS=users
+export API_VERSION=v1
