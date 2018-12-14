@@ -79,20 +79,23 @@ workflows:
       - build:
           filters:
             tags:
-              only: /.*/
+              only:
+                - /.*/
+                - /^db.*/
+                - /^api.*/
       - deploy-db-prod:
           requires:
             - build
           filters:
             tags:
               only: /^db.*/
-#            branches:
-#              ignore: /.*/
+            branches:
+              ignore: /.*/
       - deploy-api-prod:
           requires:
             - build
           filters:
             tags:
               only: /^api.*/
-#            branches:
-#              ignore: /.*/
+            branches:
+              ignore: /.*/
