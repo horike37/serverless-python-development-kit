@@ -85,7 +85,7 @@ workflows:
             - build
           filters:
             tags:
-              only: /db-.*/
+              only: /^db.*/
             branches:
               ignore: /.*/
       - deploy-api-prod:
@@ -93,6 +93,6 @@ workflows:
             - build
           filters:
             tags:
-              only: /api-.*/
+              only: /^api.*/
             branches:
               ignore: /.*/
