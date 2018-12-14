@@ -81,8 +81,6 @@ workflows:
             tags:
               only:
                 - /.*/
-#                - /^db-.*/
-#                - /^api-.*/
       - deploy-db-prod:
           requires:
             - build
