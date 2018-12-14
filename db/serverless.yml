@@ -3,6 +3,7 @@ service: sls-python-devkit-db
 provider:
   name: aws
   region: ap-northeast-1
+  deploymentBucket: serverless.sls-python-devkit.deploys
 
 resources:
   Resources:

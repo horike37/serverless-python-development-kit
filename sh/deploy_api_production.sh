@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "Deploying to stage production"
+echo "Deploying API to stage production"
 ./node_modules/.bin/serverless deploy --stage production --region ${AWS_DEFAULT_REGION} --alias ${API_VERSION} --verbose

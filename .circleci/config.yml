@@ -2,15 +2,10 @@ version: 2
 jobs:
   build:
     docker:
-      # Pythonを指定
       - image: circleci/python:3.7.1
-
     working_directory: ~/repo
     steps:
-      # リポジトリのコードを working_directory にチェックアウト
       - checkout
-
-      # npm installでServerless Frameworkのインストール
       - run:
           name: Install Serverless
           command: |
@@ -19,32 +14,25 @@ jobs:
             sudo apt-get install -y nodejs
             sudo npm install npm@latest -g
             npm install
-
       - run:
           name: Install dependencies
           command: |
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
-
-      # テストの実行
-      - run:
-          name: run unit tests
-          command: |
-            . venv/bin/activate
-            pytest tests/unit/  -s
-
-      # インテグレーションテストの実行
-      - run:
-          name: run integration tests
-          command: |
-            . venv/bin/activate
-            pytest tests/integration/ --stage $INTEGRATION_TEST_STAGE --region $AWS_DEFAULT_REGION -s
-  deploy-dev:
+#      - run:
+#          name: run unit tests
+#          command: |
+#            . venv/bin/activate
+#            pytest tests/unit/  -s
+#      - run:
+#          name: run integration tests
+#          command: |
+#            . venv/bin/activate
+#            pytest tests/integration/ --stage $INTEGRATION_TEST_STAGE --region $AWS_DEFAULT_REGION -s
+  deploy-db-prod:
     docker:
-      # specify the version you desire here
       - image: circleci/python:3.7.1
-
     working_directory: ~/repo
     steps:
       - checkout
@@ -59,35 +47,31 @@ jobs:
       - run:
           name: install Serverless Framework
           command: |
-            chmod -R +x ./ci/*
-      - deploy:
-          name: deploy for development
-          command: ./ci/deploy_development.sh
-
-  deploy-prod:
-    docker:
-      # specify the version you desire here
-      - image: circleci/python:3.7.1
-
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          name: Install Serverless
-          command: |
-            sudo apt-get install curl
-            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-            sudo apt-get install -y nodejs
-            sudo npm install npm@latest -g
-      - run: npm install
-      - run:
-          name: install Serverless Framework
-          command: |
-            chmod -R +x ./ci/*
+            chmod -R +x ./sh/*
       - deploy:
           name: deploy for production
-          command: ./ci/deploy_production.sh
-
+          command: ./sh/deploy_db_production.sh
+  deploy-api-prod:
+    docker:
+      - image: circleci/python:3.7.1
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Install Serverless
+          command: |
+            sudo apt-get install curl
+            curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+            sudo npm install npm@latest -g
+      - run: npm install
+      - run:
+          name: install Serverless Framework
+          command: |
+            chmod -R +x ./sh/*
+      - deploy:
+          name: deploy for production
+          command: ./sh/deploy_api_production.sh
 workflows:
   version: 2
   build-deploy:
@@ -96,11 +80,19 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - deploy-prod:
+      - deploy-db-prod:
           requires:
             - build
           filters:
             tags:
-              only: /.*/
+              only: /db-.*/
+            branches:
+              ignore: /.*/
+      - deploy-api-prod:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /api-.*/
             branches:
               ignore: /.*/
