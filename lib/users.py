@@ -3,7 +3,6 @@ import os
 import time
 dynamodb = boto3.resource('dynamodb')
 
-
 class Users():
     def __init__(self):
         self.users_table = dynamodb.Table(os.environ['DYNAMODB_TABLE_USERS'])
