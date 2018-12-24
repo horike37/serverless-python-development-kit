@@ -11,7 +11,6 @@ def response_builder(status_code, body={}):
         'body': json.dumps(body, cls=DecimalEncoder)
     }
 
-
 class DecimalEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, decimal.Decimal):
